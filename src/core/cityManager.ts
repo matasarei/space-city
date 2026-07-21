@@ -77,12 +77,14 @@ export class CityManager {
 
             if (zoneType === ZoneType.PowerLine) {
                 if (cell.zoneEntity != null) return false; // Can't put on buildings
+                if (cell.hasPowerLine) return false; // Already a power line
                 cell.hasPowerLine = true;
                 return true;
             }
 
             if (zoneType === ZoneType.Transit) {
                 if (cell.zoneEntity != null) return false; // Can't put on buildings
+                if (cell.zone === ZoneType.Transit) return false; // Already a road
                 cell.zone = ZoneType.Transit;
                 return true;
             }
