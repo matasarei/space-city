@@ -70,7 +70,8 @@ export class SimulationEngine {
 
             if (hasMaint && zone.isBroken) {
                 zone.isBroken = false;
-            } else if (!hasMaint && Math.random() < 0.01) { 
+            } else if (!hasMaint && this.date.getFullYear() >= 2102 && Math.random() < 0.005) { 
+                // 2-year grace period (until 2102) before anything can break, and only 0.5% chance per month
                 zone.isBroken = true;
             }
 
