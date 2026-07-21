@@ -40,14 +40,14 @@ export class SimulationEngine {
             if (z.type === ZoneType.PowerPlant || z.type === ZoneType.LandingBase) {
                 z.isPowered = true;
                 z.isRoadConnected = true;
-                if (z.type === ZoneType.PowerPlant) expPower += 50;
+                if (z.type === ZoneType.PowerPlant) expPower += 150;
                 // LandingBase is completely neutral to the economy
             } else if (z.isPowered && z.isRoadConnected) {
-                if (z.type === ZoneType.Hospital) { expHealth += 50; hospitals.push(z); }
-                if (z.type === ZoneType.PoliceStation) { expPolice += 50; police.push(z); }
-                if (z.type === ZoneType.MaintenanceDepot) { expMaint += 50; maintenance.push(z); }
-                if (z.type === ZoneType.Launchpad) { expMaint += 100; } // High maintenance cost
-                if (z.type === ZoneType.DroneStation) { expMaint += 20; }
+                if (z.type === ZoneType.Hospital) { expHealth += 200; hospitals.push(z); }
+                if (z.type === ZoneType.PoliceStation) { expPolice += 200; police.push(z); }
+                if (z.type === ZoneType.MaintenanceDepot) { expMaint += 250; maintenance.push(z); }
+                if (z.type === ZoneType.Launchpad) { expMaint += 500; } // High maintenance cost
+                if (z.type === ZoneType.DroneStation) { expMaint += 100; }
             }
         }
         
@@ -60,7 +60,7 @@ export class SimulationEngine {
         };
 
         for (const zone of this.cityManager.zones) {
-            if ([ZoneType.PowerPlant, ZoneType.Hospital, ZoneType.PoliceStation, ZoneType.MaintenanceDepot, ZoneType.Launchpad].includes(zone.type)) {
+            if ([ZoneType.PowerPlant, ZoneType.Hospital, ZoneType.PoliceStation, ZoneType.MaintenanceDepot, ZoneType.Launchpad, ZoneType.LandingBase].includes(zone.type)) {
                 continue;
             }
             
@@ -95,9 +95,9 @@ export class SimulationEngine {
                     if (zone.population > 100) zone.population = 100;
                 }
                 
-                if (zone.type === ZoneType.Residential) revR += zone.population * 1;
-                if (zone.type === ZoneType.Commercial) revC += zone.population * 3; 
-                if (zone.type === ZoneType.Industrial) revI += Math.floor(zone.population * 2.5); 
+                if (zone.type === ZoneType.Residential) revR += Math.floor(zone.population * 0.5);
+                if (zone.type === ZoneType.Commercial) revC += Math.floor(zone.population * 1.5); 
+                if (zone.type === ZoneType.Industrial) revI += Math.floor(zone.population * 1.2); 
             } else {
                 if (zone.population > 0) zone.population -= zone.isBroken ? 2 : 1; // Lose population slower
                 if (zone.population < 0) zone.population = 0;
@@ -106,10 +106,24 @@ export class SimulationEngine {
             newPopulation += zone.population;
         }
         
+        let roadCount = 0;
+        let powerLineCount = 0;
+        for (let y = 0; y < this.cityManager.grid.height; y++) {
+            for (let x = 0; x < this.cityManager.grid.width; x++) {
+                const cell = this.cityManager.grid.getCell(x, y);
+                if (cell) {
+                    if (cell.zone === ZoneType.Transit) roadCount++;
+                    if (cell.hasPowerLine) powerLineCount++;
+                }
+            }
+        }
+        expMaint += roadCount * 1;
+        expPower += powerLineCount * 1;
+
         this.lastRevenue = { r: revR, c: revC, i: revI };
         this.lastExpenses = { power: expPower, health: expHealth, police: expPolice, maint: expMaint };
         const totalRev = revR + revC + revI;
-        const totalExp = expPower + expHealth + expPolice + expMaint + (this.cityManager.zones.length * 5);
+        const totalExp = expPower + expHealth + expPolice + expMaint;
         this.funds += (totalRev - totalExp);
 
         this.population = newPopulation;

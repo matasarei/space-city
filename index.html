@@ -17,7 +17,7 @@
       <div id="info-bar">
         <span>Date: <span id="ui-date">Jan 2100</span></span>
         <span>Pop: <span id="ui-pop">0</span></span>
-        <span>Funds: $<span id="ui-funds">1000</span></span>
+        <span>Funds: $<span id="ui-funds">5000</span></span>
       </div>
       <button id="menu-toggle" class="btn">Menu</button>
       <div id="toolbar">
@@ -194,6 +194,14 @@
       </div>
     </div>
     <div id="app"></div>
+    
+    <div id="game-over-modal" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #222; border: 2px solid #555; padding: 20px; z-index: 10000; font-family: monospace; color: white; width: 300px; text-align: center;">
+      <h2 style="color: red; margin-top: 0;">GAME OVER</h2>
+      <p>Your funds dropped below -$1000.</p>
+      <p>The colony is bankrupt!</p>
+      <button class="btn" id="btn-restart" style="width: 100%; margin-top: 20px;">Restart</button>
+    </div>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

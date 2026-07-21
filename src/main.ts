@@ -18,7 +18,7 @@ async function bootstrap() {
     const renderer = new GameRenderer(cityManager);
     await renderer.init();
 
-    new UIManager(cityManager, renderer);
+    new UIManager(cityManager, renderer, simulation);
     new AdvisorSystem(simulation, cityManager);
 
     // Setup Simulation Loop
@@ -56,8 +56,19 @@ async function bootstrap() {
             netEl.style.color = net >= 0 ? 'green' : 'red';
         }
         
+        
+        if (simulation.funds <= -1000) {
+            const modal = document.getElementById('game-over-modal');
+            if (modal) modal.style.display = 'block';
+        }
+        
         renderer.requestRender();
     }, 4000); // 1 in-game month every 4 seconds
+
+    const btnRestart = document.getElementById('btn-restart');
+    btnRestart?.addEventListener('click', () => {
+        window.location.reload();
+    });
 }
 
 bootstrap();
