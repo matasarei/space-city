@@ -98,6 +98,12 @@ describe('CityManager', () => {
             expect(success).toBe(false);
         });
 
+        it('should fail Transit placement if a Transit is already there', () => {
+            manager.placeZone(5, 5, ZoneType.Transit);
+            const success = manager.placeZone(5, 5, ZoneType.Transit);
+            expect(success).toBe(false);
+        });
+
         it('should place PowerLine', () => {
             const success = manager.placeZone(3, 3, ZoneType.PowerLine);
             expect(success).toBe(true);
@@ -109,6 +115,12 @@ describe('CityManager', () => {
 
         it('should fail PowerLine placement if an entity is already there', () => {
             manager.placeZone(5, 5, ZoneType.Residential);
+            const success = manager.placeZone(5, 5, ZoneType.PowerLine);
+            expect(success).toBe(false);
+        });
+
+        it('should fail PowerLine placement if a PowerLine is already there', () => {
+            manager.placeZone(5, 5, ZoneType.PowerLine);
             const success = manager.placeZone(5, 5, ZoneType.PowerLine);
             expect(success).toBe(false);
         });

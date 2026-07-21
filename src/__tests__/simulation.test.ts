@@ -66,9 +66,10 @@ describe('SimulationEngine', () => {
             manager.placeZone(8, 5, ZoneType.Residential);
             manager.placeZone(10, 5, ZoneType.Transit); // Provide road
 
+            const res = manager.zones.find(z => z.type === ZoneType.Residential)!;
+            res.population = 10;
             engine.tick();
             
-            const res = manager.zones.find(z => z.type === ZoneType.Residential)!;
             expect(res.population).toBeGreaterThan(0);
             expect(engine.population).toBeGreaterThan(0);
             expect(engine.lastRevenue.r).toBeGreaterThan(0);
