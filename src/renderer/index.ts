@@ -198,7 +198,7 @@ export class GameRenderer {
         
         const isMacro = [
             'Residential', 'Commercial', 'Industrial', 
-            'PowerPlant', 'Hospital', 'PoliceStation', 'MaintenanceDepot'
+            'PowerPlant', 'Hospital', 'PoliceStation', 'MaintenanceDepot', 'Launchpad'
         ].includes(this.currentTool);
         
         const size = isMacro ? 3 : 1;
