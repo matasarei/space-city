@@ -1,0 +1,27 @@
+{
+  "name": "mars-city",
+  "version": "1.0.0",
+  "description": "Mars Colony Simulator",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:ci": "vitest run"
+  },
+  "dependencies": {
+    "pixi-viewport": "^6.0.3",
+    "pixi.js": "^8.19.0",
+    "simplex-noise": "^4.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@vitest/coverage-v8": "^1.6.1",
+    "jsdom": "^29.1.1",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0",
+    "vitest": "^1.6.1"
+  }
+}

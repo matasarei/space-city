@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>SpaceCity: Mars Colony Simulator</title>
+    <style>
+      body { margin: 0; padding: 0; overflow: hidden; background-color: #000; color: #fff; font-family: monospace; }
+      #app { width: 100vw; height: 100vh; position: relative; }
+    </style>
+    <link rel="stylesheet" href="/src/ui/style.css" />
+    <link rel="icon" href="/icon.png" />
+    <link rel="apple-touch-icon" href="/icon.png" />
+  </head>
+  <body>
+    <div id="ui-layer">
+      <div id="info-bar">
+        <span>Date: <span id="ui-date">Jan 2100</span></span>
+        <span>Pop: <span id="ui-pop">0</span></span>
+        <span>Funds: $<span id="ui-funds">1000</span></span>
+      </div>
+      <button id="menu-toggle" class="btn">Menu</button>
+      <div id="toolbar">
+        <button class="btn" id="btn-budget" title="View Budget">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24" shape-rendering="crispEdges">
+            <rect x="7" y="2" width="2" height="12" fill="#00AA00"/>
+            <rect x="5" y="3" width="6" height="2" fill="#00AA00"/>
+            <rect x="4" y="5" width="2" height="2" fill="#00AA00"/>
+            <rect x="5" y="7" width="6" height="2" fill="#00AA00"/>
+            <rect x="10" y="9" width="2" height="2" fill="#00AA00"/>
+            <rect x="5" y="11" width="6" height="2" fill="#00AA00"/>
+          </svg>
+        </button>
+        <button class="btn tool-btn" data-tool="Residential" title="Residential Zone">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24" shape-rendering="crispEdges"><rect x="3" y="6" width="10" height="10" fill="#00AA00"/><rect x="5" y="4" width="6" height="2" fill="#00AA00"/><rect x="7" y="2" width="2" height="2" fill="#00AA00"/><rect x="5" y="10" width="2" height="6" fill="#000"/></svg>
+        </button>
+        <button class="btn tool-btn" data-tool="Commercial" title="Commercial Zone">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24" shape-rendering="crispEdges"><rect x="4" y="2" width="8" height="14" fill="#0055FF"/><rect x="6" y="4" width="2" height="2" fill="#FFF"/><rect x="6" y="8" width="2" height="2" fill="#FFF"/><rect x="6" y="12" width="2" height="2" fill="#FFF"/></svg>
+        </button>
+        <button class="btn tool-btn" data-tool="Industrial" title="Industrial Zone">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24" shape-rendering="crispEdges"><rect x="2" y="8" width="12" height="8" fill="#FFCC00"/><rect x="10" y="2" width="2" height="6" fill="#AA8800"/><rect x="10" y="0" width="4" height="2" fill="#555"/></svg>
+        </button>
+        <button class="btn tool-btn" data-tool="Transit" title="Build Transit Tube">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24" shape-rendering="crispEdges">
+            <rect x="0" y="5" width="16" height="6" fill="#333"/>
+            <rect x="0" y="7" width="16" height="2" fill="#00FFFF"/>
+            <rect x="3" y="6" width="2" height="4" fill="#666"/>
+            <rect x="7" y="6" width="2" height="4" fill="#666"/>
+            <rect x="11" y="6" width="2" height="4" fill="#666"/>
+          </svg>
+        </button>
+        <button class="btn tool-btn secondary-tool" data-tool="PowerPlant" title="Build Power Plant">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24" shape-rendering="crispEdges">
+            <rect x="9" y="2" width="3" height="2" fill="#FFCC00"/>
+            <rect x="7" y="4" width="3" height="2" fill="#FFCC00"/>
+            <rect x="5" y="6" width="3" height="2" fill="#FFCC00"/>
+            <rect x="3" y="8" width="9" height="2" fill="#FFCC00"/>
+            <rect x="7" y="10" width="3" height="2" fill="#FFCC00"/>
+            <rect x="5" y="12" width="3" height="3" fill="#FFCC00"/>
+          </svg>
+        </button>
+        <button class="btn tool-btn secondary-tool" data-tool="PowerLine" title="Build Power Line">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24" shape-rendering="crispEdges"><rect x="7" y="2" width="2" height="12" fill="#8B4513"/><rect x="5" y="4" width="6" height="2" fill="#8B4513"/><rect x="4" y="4" width="10" height="1" fill="#000"/></svg>
+        </button>
+        <button class="btn tool-btn secondary-tool" data-tool="Hospital" title="Build Hospital">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24" shape-rendering="crispEdges"><rect x="2" y="2" width="12" height="12" fill="#FFF"/><rect x="6" y="4" width="4" height="8" fill="#F00"/><rect x="4" y="6" width="8" height="4" fill="#F00"/></svg>
+        </button>
+        <button class="btn tool-btn secondary-tool" data-tool="PoliceStation" title="Build Police Station">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24" shape-rendering="crispEdges">
+            <rect x="2" y="10" width="12" height="2" fill="#333"/>
+            <rect x="3" y="6" width="4" height="4" fill="#F00"/>
+            <rect x="4" y="5" width="2" height="1" fill="#FF8888"/>
+            <rect x="7" y="6" width="2" height="4" fill="#888"/>
+            <rect x="9" y="6" width="4" height="4" fill="#0000FF"/>
+            <rect x="10" y="5" width="2" height="1" fill="#8888FF"/>
+          </svg>
+        </button>
+        <button class="btn tool-btn secondary-tool" data-tool="MaintenanceDepot" title="Build Maintenance Depot">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24" shape-rendering="crispEdges">
+            <rect x="1" y="4" width="4" height="2" fill="#555"/>
+            <rect x="3" y="6" width="2" height="4" fill="#555"/>
+            <rect x="1" y="10" width="4" height="2" fill="#555"/>
+            <rect x="5" y="7" width="6" height="2" fill="#777"/>
+            <rect x="11" y="5" width="4" height="2" fill="#555"/>
+            <rect x="11" y="7" width="1" height="2" fill="#555"/>
+            <rect x="14" y="7" width="1" height="2" fill="#555"/>
+            <rect x="11" y="9" width="4" height="2" fill="#555"/>
+          </svg>
+        </button>
+        <button class="btn tool-btn secondary-tool" data-tool="Launchpad" title="Build Launchpad">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24" shape-rendering="crispEdges">
+                <rect x="7" y="1" width="2" height="2" fill="#F00"/>
+                <rect x="6" y="3" width="4" height="2" fill="#F00"/>
+                <rect x="6" y="5" width="4" height="6" fill="#FFF"/>
+                <rect x="7" y="6" width="2" height="2" fill="#00FFFF"/>
+                <rect x="4" y="8" width="2" height="3" fill="#888"/>
+                <rect x="10" y="8" width="2" height="3" fill="#888"/>
+                <rect x="6" y="11" width="4" height="1" fill="#444"/>
+                <rect x="7" y="12" width="2" height="3" fill="#FF8800"/>
+                <rect x="7" y="13" width="2" height="1" fill="#FFFF00"/>
+            </svg>
+        </button>
+        <button class="btn tool-btn secondary-tool" data-tool="DroneStation" title="Build Drone Station">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24" shape-rendering="crispEdges">
+                <rect x="2" y="2" width="12" height="12" fill="#333"/>
+                <circle cx="8" cy="8" r="5" fill="#222"/>
+                <rect x="7" y="7" width="2" height="2" fill="#00FFFF"/>
+                <rect x="6" y="6" width="1" height="1" fill="#555"/>
+                <rect x="9" y="9" width="1" height="1" fill="#555"/>
+                <rect x="6" y="9" width="1" height="1" fill="#555"/>
+                <rect x="9" y="6" width="1" height="1" fill="#555"/>
+            </svg>
+        </button>
+        <button class="btn tool-btn" data-tool="Clear" title="Bulldoze">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24" shape-rendering="crispEdges">
+            <rect x="2" y="10" width="10" height="4" fill="#333"/>
+            <rect x="3" y="11" width="8" height="2" fill="#555"/>
+            <rect x="4" y="6" width="6" height="4" fill="#FFCC00"/>
+            <rect x="5" y="4" width="4" height="2" fill="#FFCC00"/>
+            <rect x="11" y="8" width="2" height="6" fill="#888"/>
+            <rect x="12" y="7" width="2" height="7" fill="#AAA"/>
+          </svg>
+        </button>
+        <button class="btn" id="btn-expand-tools" title="More Tools">
+           <svg width="24" height="24" viewBox="0 0 16 16" fill="black" shape-rendering="crispEdges">
+               <polygon points="3,5 13,5 8,11"/>
+           </svg>
+        </button>
+      </div>
+      
+      <div id="advisor-panel">
+        <img id="advisor-portrait" src='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" shape-rendering="crispEdges"><rect width="64" height="64" fill="%23c0c0c0"/><rect x="20" y="20" width="24" height="20" fill="%23FFCCAA"/><rect x="24" y="26" width="4" height="4" fill="%23000"/><rect x="36" y="26" width="4" height="4" fill="%23000"/><rect x="28" y="34" width="8" height="2" fill="%23000"/><rect x="16" y="12" width="32" height="8" fill="%23442200"/><rect x="16" y="20" width="4" height="8" fill="%23442200"/><rect x="12" y="40" width="40" height="24" fill="%23224488"/><rect x="28" y="40" width="8" height="12" fill="%23FFF"/></svg>' alt="Advisor" />
+        <div id="advisor-message">Welcome to Mars City, Mayor!</div>
+      </div>
+
+      <div id="zoom-controls">
+        <button class="btn zoom-btn" id="zoom-in">+</button>
+        <button class="btn zoom-btn" id="zoom-reset">1:1</button>
+        <button class="btn zoom-btn" id="zoom-out">-</button>
+      </div>
+      
+      <!-- Budget Modal -->
+      <div id="budget-modal" style="display: none;">
+          <h2 style="margin-top: 0; text-align: center; border-bottom: 2px solid #808080; padding-bottom: 10px;">CITY BUDGET</h2>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+              <div style="width: 45%;">
+                  <h3>REVENUE</h3>
+                  <div style="display: flex; justify-content: space-between;"><span>Res:</span> <span id="budget-rev-r" style="color: green;">$0</span></div>
+                  <div style="display: flex; justify-content: space-between;"><span>Com:</span> <span id="budget-rev-c" style="color: green;">$0</span></div>
+                  <div style="display: flex; justify-content: space-between;"><span>Ind:</span> <span id="budget-rev-i" style="color: green;">$0</span></div>
+                  <div style="border-top: 1px solid #000; margin-top: 5px; padding-top: 5px; display: flex; justify-content: space-between; font-weight: bold;">
+                      <span>Total:</span> <span id="budget-rev-total" style="color: green;">$0</span>
+                  </div>
+              </div>
+              <div style="width: 45%;">
+                  <h3>EXPENSES</h3>
+                  <div style="display: flex; justify-content: space-between;"><span>Power:</span> <span id="budget-exp-p" style="color: red;">$0</span></div>
+                  <div style="display: flex; justify-content: space-between;"><span>Health:</span> <span id="budget-exp-h" style="color: red;">$0</span></div>
+                  <div style="display: flex; justify-content: space-between;"><span>Police:</span> <span id="budget-exp-pol" style="color: red;">$0</span></div>
+                  <div style="display: flex; justify-content: space-between;"><span>Maint:</span> <span id="budget-exp-m" style="color: red;">$0</span></div>
+                  <div style="border-top: 1px solid #000; margin-top: 5px; padding-top: 5px; display: flex; justify-content: space-between; font-weight: bold;">
+                      <span>Total:</span> <span id="budget-exp-total" style="color: red;">$0</span>
+                  </div>
+              </div>
+          </div>
+          <div style="text-align: center; font-size: 18px; font-weight: bold; padding: 10px; background: #FFF; border: 2px solid; border-color: #808080 #FFF #FFF #808080; margin-bottom: 20px;">
+              NET INCOME: <span id="budget-net">$0</span>
+          </div>
+          <div style="text-align: center;">
+              <button id="btn-close-budget" class="btn">Close</button>
+          </div>
+      </div>
+    </div>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
