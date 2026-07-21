@@ -5,6 +5,16 @@ import { TerrainType } from '../core/terrain';
 import { ZoneType } from '../core/zone';
 import { AssetFactory } from './assetFactory';
 
+interface ActiveDrone {
+    sprite: Graphics;
+    startX: number;
+    startY: number;
+    targetX: number;
+    targetY: number;
+    progress: number;
+    speed: number;
+}
+
 export class GameRenderer {
     private app: Application;
     private viewport: Viewport | null = null;
@@ -17,12 +27,16 @@ export class GameRenderer {
     private terrainLayer = new Container();
     private powerLineLayer = new Container();
     private zoneLayer = new Container();
+    private droneLayer = new Container();
     private ghostGraphics = new Graphics();
 
     // Sprite Caching
     private terrainSprites: Sprite[][] = [];
     private powerLineSprites: Sprite[][] = [];
     private zoneContainers: Map<string, Container> = new Map();
+    
+    private activeDrones: ActiveDrone[] = [];
+    private droneSpawnTimer = 0;
 
     constructor(cityManager: CityManager) {
         this.cityManager = cityManager;
@@ -55,6 +69,7 @@ export class GameRenderer {
         this.viewport.addChild(this.terrainLayer);
         this.viewport.addChild(this.powerLineLayer);
         this.viewport.addChild(this.zoneLayer);
+        this.viewport.addChild(this.droneLayer);
         this.viewport.addChild(this.ghostGraphics);
 
         // Map Control Requirements Setup
@@ -144,6 +159,14 @@ export class GameRenderer {
         // Custom, bulletproof bounds checking (Requirement: no move outside the map)
         this.app.ticker.add(() => {
             if (!this.viewport) return;
+            
+            this.droneSpawnTimer += this.app.ticker.deltaTime;
+            if (this.droneSpawnTimer > 60) { // approx every 1 second
+                this.droneSpawnTimer = 0;
+                this.spawnRandomDrone();
+            }
+            this.updateDrones(this.app.ticker.deltaTime);
+
             const screenW = window.innerWidth;
             const screenH = window.innerHeight;
             
@@ -182,6 +205,83 @@ export class GameRenderer {
             }
         };
         requestAnimationFrame(centerCamera);
+    }
+
+    private spawnRandomDrone() {
+        const nodes = this.cityManager.zones.filter(z => z.type === ZoneType.DroneStation || z.type === ZoneType.Launchpad);
+        if (nodes.length < 2) return;
+        
+        const startNode = nodes[Math.floor(Math.random() * nodes.length)];
+        let endNode = nodes[Math.floor(Math.random() * nodes.length)];
+        while (endNode === startNode) {
+            endNode = nodes[Math.floor(Math.random() * nodes.length)];
+        }
+        
+        const drone = new Graphics();
+        // Rotors
+        drone.rect(-6, -5, 3, 1); drone.fill(0xAAAAAA);
+        drone.rect(-5, -6, 1, 3); drone.fill(0xAAAAAA);
+        drone.rect(3, -5, 3, 1); drone.fill(0xAAAAAA);
+        drone.rect(4, -6, 1, 3); drone.fill(0xAAAAAA);
+        drone.rect(-6, 4, 3, 1); drone.fill(0xAAAAAA);
+        drone.rect(-5, 3, 1, 3); drone.fill(0xAAAAAA);
+        drone.rect(3, 4, 3, 1); drone.fill(0xAAAAAA);
+        drone.rect(4, 3, 1, 3); drone.fill(0xAAAAAA);
+        
+        // Rotor Lights
+        drone.rect(-5, -5, 1, 1); drone.fill(0xFF0000);
+        drone.rect(4, -5, 1, 1); drone.fill(0xFF0000);
+        drone.rect(-5, 4, 1, 1); drone.fill(0x00FF00);
+        drone.rect(4, 4, 1, 1); drone.fill(0x00FF00);
+        
+        // Arms
+        drone.rect(-4, -4, 2, 2); drone.fill(0x555555);
+        drone.rect(2, -4, 2, 2); drone.fill(0x555555);
+        drone.rect(-4, 2, 2, 2); drone.fill(0x555555);
+        drone.rect(2, 2, 2, 2); drone.fill(0x555555);
+        
+        // Body
+        drone.rect(-2, -2, 4, 4); drone.fill(0x00FFFF);
+        drone.rect(-1, -1, 2, 2); drone.fill(0x222222);
+        drone.rect(-1, -3, 2, 1); drone.fill(0xFFFFFF); // front camera
+        
+        this.droneLayer.addChild(drone);
+        
+        const startX = startNode.centerX * this.TILE_SIZE;
+        const startY = startNode.centerY * this.TILE_SIZE;
+        const endX = endNode.centerX * this.TILE_SIZE;
+        const endY = endNode.centerY * this.TILE_SIZE;
+        
+        drone.x = startX;
+        drone.y = startY;
+        
+        const dist = Math.hypot(endX - startX, endY - startY);
+        const speed = 2.0 / dist; // consistent flight speed
+        
+        this.activeDrones.push({
+            sprite: drone,
+            startX, startY,
+            targetX: endX, targetY: endY,
+            progress: 0,
+            speed
+        });
+    }
+
+    private updateDrones(dt: number) {
+        for (let i = this.activeDrones.length - 1; i >= 0; i--) {
+            const d = this.activeDrones[i];
+            d.progress += d.speed * dt;
+            
+            if (d.progress >= 1) {
+                this.droneLayer.removeChild(d.sprite);
+                d.sprite.destroy();
+                this.activeDrones.splice(i, 1);
+            } else {
+                d.sprite.x = d.startX + (d.targetX - d.startX) * d.progress;
+                d.sprite.y = d.startY + (d.targetY - d.startY) * d.progress;
+                d.sprite.rotation = Math.sin(d.progress * Math.PI * 40) * 0.1; 
+            }
+        }
     }
 
     public updateGhost(gridX: number, gridY: number) {
