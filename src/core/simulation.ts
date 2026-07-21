@@ -40,14 +40,14 @@ export class SimulationEngine {
             if (z.type === ZoneType.PowerPlant || z.type === ZoneType.LandingBase) {
                 z.isPowered = true;
                 z.isRoadConnected = true;
-                if (z.type === ZoneType.PowerPlant) expPower += 150;
+                if (z.type === ZoneType.PowerPlant) expPower += 20;
                 // LandingBase is completely neutral to the economy
             } else if (z.isPowered && z.isRoadConnected) {
-                if (z.type === ZoneType.Hospital) { expHealth += 200; hospitals.push(z); }
-                if (z.type === ZoneType.PoliceStation) { expPolice += 200; police.push(z); }
-                if (z.type === ZoneType.MaintenanceDepot) { expMaint += 250; maintenance.push(z); }
-                if (z.type === ZoneType.Launchpad) { expMaint += 500; } // High maintenance cost
-                if (z.type === ZoneType.DroneStation) { expMaint += 100; }
+                if (z.type === ZoneType.Hospital) { expHealth += 50; hospitals.push(z); }
+                if (z.type === ZoneType.PoliceStation) { expPolice += 50; police.push(z); }
+                if (z.type === ZoneType.MaintenanceDepot) { expMaint += 50; maintenance.push(z); }
+                if (z.type === ZoneType.Launchpad) { expMaint += 100; } // High maintenance cost
+                if (z.type === ZoneType.DroneStation) { expMaint += 20; }
             }
         }
         
@@ -95,9 +95,9 @@ export class SimulationEngine {
                     if (zone.population > 100) zone.population = 100;
                 }
                 
-                if (zone.type === ZoneType.Residential) revR += Math.floor(zone.population * 0.5);
-                if (zone.type === ZoneType.Commercial) revC += Math.floor(zone.population * 1.5); 
-                if (zone.type === ZoneType.Industrial) revI += Math.floor(zone.population * 1.2); 
+                if (zone.type === ZoneType.Residential) revR += Math.floor(zone.population * 1.0);
+                if (zone.type === ZoneType.Commercial) revC += Math.floor(zone.population * 2.0); 
+                if (zone.type === ZoneType.Industrial) revI += Math.floor(zone.population * 1.5); 
             } else {
                 if (zone.population > 0) zone.population -= zone.isBroken ? 2 : 1; // Lose population slower
                 if (zone.population < 0) zone.population = 0;
