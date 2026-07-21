@@ -70,37 +70,46 @@ export class SimulationEngine {
 
             if (hasMaint && zone.isBroken) {
                 zone.isBroken = false;
+                expMaint += 100; // Repair cost added to this month's maintenance bill
             } else if (!hasMaint && this.date.getFullYear() >= 2102 && Math.random() < 0.005) { 
                 // 2-year grace period (until 2102) before anything can break, and only 0.5% chance per month
                 zone.isBroken = true;
             }
 
-            if (zone.isPowered && zone.isRoadConnected && !zone.isBroken) {
-                let demand = 1.0;
-                if (!hasHealth) demand -= 0.2; 
-                if (!hasPolice) demand -= 0.2;
-                if (zone.trafficPenalty > 0) demand -= zone.trafficPenalty; // Apply traffic gridlock penalty
+            if (zone.isPowered && zone.isRoadConnected) {
+                if (!zone.isBroken) {
+                    let demand = 1.0;
+                    if (!hasHealth) demand -= 0.2; 
+                    if (!hasPolice) demand -= 0.2;
+                    if (zone.trafficPenalty > 0) demand -= zone.trafficPenalty; // Apply traffic gridlock penalty
 
-                if (zone.type === ZoneType.Residential) {
-                    if (popR > (popC + popI) * 2 + 100) demand = 0; // More forgiving start limit
-                } else if (zone.type === ZoneType.Commercial) {
-                    if (popC > popR * 0.8 + 30) demand = 0;
-                } else if (zone.type === ZoneType.Industrial) {
-                    if (popI > popR * 0.8 + 30) demand = 0;
-                }
+                    if (zone.type === ZoneType.Residential) {
+                        if (popR > (popC + popI) * 2 + 100) demand = 0; // More forgiving start limit
+                    } else if (zone.type === ZoneType.Commercial) {
+                        if (popC > popR * 0.8 + 30) demand = 0;
+                    } else if (zone.type === ZoneType.Industrial) {
+                        if (popI > popR * 0.8 + 30) demand = 0;
+                    }
 
-                if (zone.population < 100 && demand > 0) {
-                    // Guarantee at least 1 population growth if there is demand
-                    const growth = Math.max(1, Math.floor((Math.random() * 4 + 1) * demand));
-                    zone.population += growth;
-                    if (zone.population > 100) zone.population = 100;
+                    if (zone.population < 100 && demand > 0) {
+                        // Guarantee at least 1 population growth if there is demand
+                        const growth = Math.max(1, Math.floor((Math.random() * 4 + 1) * demand));
+                        zone.population += growth;
+                        if (zone.population > 100) zone.population = 100;
+                    }
+                } else {
+                    // Broken zones lose population and don't grow
+                    if (zone.population > 0) zone.population -= 2;
+                    if (zone.population < 0) zone.population = 0;
                 }
                 
-                if (zone.type === ZoneType.Residential) revR += Math.floor(zone.population * 1.0);
-                if (zone.type === ZoneType.Commercial) revC += Math.floor(zone.population * 2.0); 
-                if (zone.type === ZoneType.Industrial) revI += Math.floor(zone.population * 1.5); 
+                // Revenue generation (broken zones generate 50% less revenue)
+                const penalty = zone.isBroken ? 0.5 : 1.0;
+                if (zone.type === ZoneType.Residential) revR += Math.floor(zone.population * 1.0 * penalty);
+                if (zone.type === ZoneType.Commercial) revC += Math.floor(zone.population * 2.0 * penalty); 
+                if (zone.type === ZoneType.Industrial) revI += Math.floor(zone.population * 1.5 * penalty); 
             } else {
-                if (zone.population > 0) zone.population -= zone.isBroken ? 2 : 1; // Lose population slower
+                if (zone.population > 0) zone.population -= 1; // Lose population slower if just unpowered/disconnected
                 if (zone.population < 0) zone.population = 0;
             }
             
