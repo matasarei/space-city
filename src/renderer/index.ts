@@ -7,12 +7,14 @@ import { AssetFactory } from './assetFactory';
 
 interface ActiveDrone {
     sprite: Graphics;
+    lights: Graphics;
     startX: number;
     startY: number;
     targetX: number;
     targetY: number;
     progress: number;
     speed: number;
+    returning: boolean;
 }
 
 export class GameRenderer {
@@ -225,6 +227,8 @@ export class GameRenderer {
         let startNode;
         let endNode;
         let drone = new Graphics();
+        let lights = new Graphics();
+        drone.addChild(lights);
 
         const drawProps = (cx: number, cy: number, g: Graphics) => {
             g.rect(cx-6, cy-5, 3, 1); g.fill(0xAAAAAA); g.rect(cx-5, cy-6, 1, 3); g.fill(0xAAAAAA);
@@ -237,35 +241,36 @@ export class GameRenderer {
         };
 
         if (type === 'cargo') {
+            if (Math.random() > 0.3) return; // Cargo is common but not overwhelming
             startNode = launchpads[Math.floor(Math.random() * launchpads.length)];
             endNode = launchpads[Math.floor(Math.random() * launchpads.length)];
             while (endNode === startNode) endNode = launchpads[Math.floor(Math.random() * launchpads.length)];
             
             drawProps(0, 0, drone);
-            drone.rect(-5, -5, 1, 1); drone.fill(0xFF0000); drone.rect(4, -5, 1, 1); drone.fill(0xFF0000);
-            drone.rect(-5, 4, 1, 1); drone.fill(0x00FF00); drone.rect(4, 4, 1, 1); drone.fill(0x00FF00);
+            lights.rect(-5, -5, 1, 1); lights.fill(0xFF0000); lights.rect(4, -5, 1, 1); lights.fill(0xFF0000);
+            lights.rect(-5, 4, 1, 1); lights.fill(0x00FF00); lights.rect(4, 4, 1, 1); lights.fill(0x00FF00);
             drone.rect(-2, -2, 4, 4); drone.fill(0x00FFFF);
             drone.rect(-1, -1, 2, 2); drone.fill(0x222222);
             drone.rect(-1, -3, 2, 1); drone.fill(0xFFFFFF); // camera
         } else if (type === 'police') {
-            if (Math.random() > 0.4) return; // lower frequency
+            if (Math.random() > 0.05) return; // Police is very rare
             startNode = police[Math.floor(Math.random() * police.length)];
             endNode = targets[Math.floor(Math.random() * targets.length)];
             
             drawProps(0, 0, drone);
-            drone.rect(-5, -5, 1, 1); drone.fill(0xFF0000); drone.rect(4, -5, 1, 1); drone.fill(0x0000FF);
-            drone.rect(-5, 4, 1, 1); drone.fill(0xFF0000); drone.rect(4, 4, 1, 1); drone.fill(0x0000FF);
+            lights.rect(-5, -5, 1, 1); lights.fill(0xFF0000); lights.rect(4, -5, 1, 1); lights.fill(0x0000FF);
+            lights.rect(-5, 4, 1, 1); lights.fill(0xFF0000); lights.rect(4, 4, 1, 1); lights.fill(0x0000FF);
             drone.rect(-2, -2, 4, 4); drone.fill(0x113388);
             drone.rect(-1, -1, 2, 2); drone.fill(0xFFDD00);
             drone.rect(-1, -3, 2, 1); drone.fill(0xFFFFFF); // camera
         } else {
-            if (Math.random() > 0.4) return; // lower frequency
+            if (Math.random() > 0.05) return; // Ambulance is very rare
             startNode = hospitals[Math.floor(Math.random() * hospitals.length)];
             endNode = targets[Math.floor(Math.random() * targets.length)];
             
             drawProps(0, 0, drone);
-            drone.rect(-5, -5, 1, 1); drone.fill(0xFF0000); drone.rect(4, -5, 1, 1); drone.fill(0xFF0000);
-            drone.rect(-5, 4, 1, 1); drone.fill(0xFF0000); drone.rect(4, 4, 1, 1); drone.fill(0xFF0000);
+            lights.rect(-5, -5, 1, 1); lights.fill(0xFF0000); lights.rect(4, -5, 1, 1); lights.fill(0xFF0000);
+            lights.rect(-5, 4, 1, 1); lights.fill(0xFF0000); lights.rect(4, 4, 1, 1); lights.fill(0xFF0000);
             drone.rect(-2, -2, 4, 4); drone.fill(0xFFFFFF);
             drone.rect(-1, -2, 2, 4); drone.fill(0xCC0000);
             drone.rect(-2, -1, 4, 2); drone.fill(0xCC0000);
@@ -287,10 +292,12 @@ export class GameRenderer {
         
         this.activeDrones.push({
             sprite: drone,
+            lights,
             startX, startY,
             targetX: endX, targetY: endY,
             progress: 0,
-            speed
+            speed,
+            returning: false
         });
     }
 
@@ -299,10 +306,24 @@ export class GameRenderer {
             const d = this.activeDrones[i];
             d.progress += d.speed * dt;
             
+            // Blink lights every ~250ms
+            d.lights.visible = Math.floor(Date.now() / 250) % 2 === 0;
+            
             if (d.progress >= 1) {
-                this.droneLayer.removeChild(d.sprite);
-                d.sprite.destroy();
-                this.activeDrones.splice(i, 1);
+                if (!d.returning) {
+                    d.returning = true;
+                    d.progress = 0;
+                    const tempX = d.startX;
+                    const tempY = d.startY;
+                    d.startX = d.targetX;
+                    d.startY = d.targetY;
+                    d.targetX = tempX;
+                    d.targetY = tempY;
+                } else {
+                    this.droneLayer.removeChild(d.sprite);
+                    d.sprite.destroy({ children: true });
+                    this.activeDrones.splice(i, 1);
+                }
             } else {
                 d.sprite.x = d.startX + (d.targetX - d.startX) * d.progress;
                 d.sprite.y = d.startY + (d.targetY - d.startY) * d.progress;
