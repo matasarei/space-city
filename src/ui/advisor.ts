@@ -7,6 +7,10 @@ export class AdvisorSystem {
     private cityManager: CityManager;
     private messageElement: HTMLElement;
     private portraitElement: HTMLImageElement;
+    private tempMessageTimeout: any = null;
+    
+    private assistantPortrait = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" shape-rendering="crispEdges"><rect width="64" height="64" fill="%23c0c0c0"/><rect x="20" y="20" width="24" height="20" fill="%23FFCCAA"/><rect x="24" y="26" width="4" height="4" fill="%23000"/><rect x="36" y="26" width="4" height="4" fill="%23000"/><rect x="28" y="34" width="8" height="2" fill="%23000"/><rect x="16" y="12" width="32" height="8" fill="%23442200"/><rect x="16" y="20" width="4" height="8" fill="%23442200"/><rect x="12" y="40" width="40" height="24" fill="%23224488"/><rect x="28" y="40" width="8" height="12" fill="%23FFF"/></svg>`;
+    private engineerPortrait = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" shape-rendering="crispEdges"><rect width="64" height="64" fill="%23c0c0c0"/><rect x="20" y="20" width="24" height="20" fill="%23FFCCAA"/><rect x="24" y="28" width="4" height="4" fill="%23000"/><rect x="36" y="28" width="4" height="4" fill="%23000"/><rect x="22" y="24" width="6" height="2" fill="%23000"/><rect x="36" y="24" width="6" height="2" fill="%23000"/><rect x="28" y="36" width="8" height="2" fill="%23000"/><rect x="16" y="8" width="32" height="12" fill="%23FFAA00"/><rect x="12" y="16" width="40" height="4" fill="%23FFAA00"/><rect x="12" y="40" width="40" height="24" fill="%23884422"/></svg>`;
 
     constructor(sim: SimulationEngine, city: CityManager) {
          this.simulation = sim;
@@ -18,7 +22,28 @@ export class AdvisorSystem {
          this.update();
     }
 
+    public showTemporaryMessage(msg: string, isError: boolean = false, character: 'assistant' | 'engineer' = 'assistant') {
+         if (this.tempMessageTimeout) {
+             clearTimeout(this.tempMessageTimeout);
+         }
+         this.messageElement.innerText = msg;
+         if (isError) {
+             this.messageElement.style.color = '#ff4444';
+         } else {
+             this.messageElement.style.color = '';
+         }
+         
+         this.portraitElement.src = character === 'assistant' ? this.assistantPortrait : this.engineerPortrait;
+         
+         this.tempMessageTimeout = setTimeout(() => {
+             this.messageElement.style.color = '';
+             this.tempMessageTimeout = null;
+             this.update(); // Revert to normal message
+         }, 3000);
+    }
+
     public update() {
+         if (this.tempMessageTimeout) return;
          const zones = this.cityManager.zones;
          let unpowered = 0;
          let unconnected = 0;
@@ -40,8 +65,8 @@ export class AdvisorSystem {
          }
 
          let msg = "";
-         let portrait = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" shape-rendering="crispEdges"><rect width="64" height="64" fill="%23c0c0c0"/><rect x="20" y="20" width="24" height="20" fill="%23FFCCAA"/><rect x="24" y="26" width="4" height="4" fill="%23000"/><rect x="36" y="26" width="4" height="4" fill="%23000"/><rect x="28" y="34" width="8" height="2" fill="%23000"/><rect x="16" y="12" width="32" height="8" fill="%23442200"/><rect x="16" y="20" width="4" height="8" fill="%23442200"/><rect x="12" y="40" width="40" height="24" fill="%23224488"/><rect x="28" y="40" width="8" height="12" fill="%23FFF"/></svg>`;
-         const warningPortrait = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" shape-rendering="crispEdges"><rect width="64" height="64" fill="%23c0c0c0"/><rect x="20" y="20" width="24" height="20" fill="%23FFCCAA"/><rect x="24" y="28" width="4" height="4" fill="%23000"/><rect x="36" y="28" width="4" height="4" fill="%23000"/><rect x="22" y="24" width="6" height="2" fill="%23000"/><rect x="36" y="24" width="6" height="2" fill="%23000"/><rect x="28" y="36" width="8" height="2" fill="%23000"/><rect x="16" y="8" width="32" height="12" fill="%23FFAA00"/><rect x="12" y="16" width="40" height="4" fill="%23FFAA00"/><rect x="12" y="40" width="40" height="24" fill="%23884422"/></svg>`;
+         let portrait = this.assistantPortrait;
+         const warningPortrait = this.engineerPortrait;
 
          if (totalBroken > 0) {
              msg = `Engineer: "Mayor! ${totalBroken} buildings are breaking down! We need a functioning Maintenance Depot!"`;

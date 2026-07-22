@@ -454,14 +454,14 @@ export class GameRenderer {
                     tSprite.tint = 0xFFFFFF;
                 } else if (cell.zoneEntity != null) {
                     tSprite.texture = AssetFactory.terrainTextures['redsand'];
-                    tSprite.tint = 0x555555;
+                    tSprite.tint = 0xFFFFFF;
                 } else {
                     tSprite.tint = 0xFFFFFF; 
                     switch (cell.terrain) {
                         case TerrainType.Rock: tSprite.texture = AssetFactory.terrainTextures['rock']; break;
-                        case TerrainType.Iron: tSprite.texture = AssetFactory.terrainTextures['rock']; tSprite.tint = 0x886655; break;
+                        case TerrainType.Iron: tSprite.texture = AssetFactory.terrainTextures['iron']; break;
                         case TerrainType.Crater: tSprite.texture = AssetFactory.terrainTextures['crater']; break;
-                        case TerrainType.Ice: tSprite.texture = AssetFactory.terrainTextures['redsand']; tSprite.tint = 0x99DDFF; break;
+                        case TerrainType.Ice: tSprite.texture = AssetFactory.terrainTextures['ice']; break;
                         case TerrainType.RedSand: 
                         default:
                             tSprite.texture = AssetFactory.terrainTextures['redsand']; 
@@ -520,9 +520,11 @@ export class GameRenderer {
                 if (zone.type === ZoneType.Commercial) typeStr = 'com';
                 if (zone.type === ZoneType.Industrial) typeStr = 'ind';
                 
-                if (zone.population === 0) {
-                    container.addChild(new Sprite(AssetFactory.buildingTextures[`empty_${typeStr}`]));
-                } else if (zone.population < 40) {
+                // Always add the 96x96 Zone Foundation with the ONE GENERAL OUTER BORDER first!
+                const zoneBg = new Sprite(AssetFactory.buildingTextures[`empty_${typeStr}`]);
+                container.addChild(zoneBg);
+
+                if (zone.population > 0 && zone.population < 40) {
                     const numHouses = Math.min(8, Math.max(1, Math.floor(zone.population / 5)));
                     const positions = [[0,0], [1,0], [2,0], [0,1], [2,1], [0,2], [1,2], [2,2]];
                     
@@ -537,7 +539,7 @@ export class GameRenderer {
                         s.y = positions[i][1] * this.TILE_SIZE;
                         container.addChild(s);
                     }
-                } else if (zone.population < 80) {
+                } else if (zone.population >= 40 && zone.population < 80) {
                     const varIndex = seed % 2;
                     const m = new Sprite(AssetFactory.buildingTextures[`med_${typeStr}_${varIndex}`]);
                     
@@ -563,12 +565,10 @@ export class GameRenderer {
                         s1.x = pos[0] * this.TILE_SIZE; s1.y = pos[1] * this.TILE_SIZE;
                         container.addChild(s1);
                     }
-                } else {
+                } else if (zone.population >= 80) {
                     const varIndex = seed % 2;
                     const b = new Sprite(AssetFactory.buildingTextures[`arcology_${typeStr}_${varIndex}`]);
-                    b.anchor.set(0.5);
-                    b.x = 48; b.y = 48;
-                    b.rotation = (seed % 4) * (Math.PI / 2);
+                    b.x = 0; b.y = 0;
                     container.addChild(b);
                 }
             }

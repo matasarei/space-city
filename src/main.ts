@@ -18,8 +18,8 @@ async function bootstrap() {
     const renderer = new GameRenderer(cityManager);
     await renderer.init();
 
-    new UIManager(cityManager, renderer, simulation);
-    new AdvisorSystem(simulation, cityManager);
+    const advisor = new AdvisorSystem(simulation, cityManager);
+    new UIManager(cityManager, renderer, simulation, advisor);
 
     // Setup Simulation Loop
     const uiDate = document.getElementById('ui-date');

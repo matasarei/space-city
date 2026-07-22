@@ -2,11 +2,12 @@ import { ZoneType } from '../core/zone';
 import { CityManager } from '../core/cityManager';
 import { GameRenderer } from '../renderer/index';
 import { SimulationEngine } from '../core/simulation';
+import { AdvisorSystem } from './advisor';
 
 export class UIManager {
     public selectedTool: ZoneType | 'Clear' | null = null;
     
-    constructor(private cityManager: CityManager, private renderer: GameRenderer, private sim: SimulationEngine) {
+    constructor(private cityManager: CityManager, private renderer: GameRenderer, private sim: SimulationEngine, private advisor: AdvisorSystem) {
         this.setupEventListeners();
     }
 
@@ -81,7 +82,7 @@ export class UIManager {
         else if (this.selectedTool === ZoneType.PowerLine) cost = 10;
 
         if (this.sim.funds < cost) {
-            // Not enough money
+            this.advisor.showTemporaryMessage(`Assistant: "We don't have enough funds! Need $${cost}."`, true);
             return;
         }
 
@@ -90,6 +91,10 @@ export class UIManager {
             success = this.cityManager.clearZone(gridX, gridY);
         } else {
             success = this.cityManager.placeZone(gridX, gridY, this.selectedTool as ZoneType);
+        }
+        
+        if (!success) {
+            this.advisor.showTemporaryMessage(`Engineer: "Cannot build there! The area is blocked or invalid."`, true, 'engineer');
         }
         
         if (success) {
