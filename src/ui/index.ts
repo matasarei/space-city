@@ -1,11 +1,12 @@
 import { ZoneType } from '../core/zone';
 import { CityManager } from '../core/cityManager';
 import { GameRenderer } from '../renderer/index';
+import { SimulationEngine } from '../core/simulation';
 
 export class UIManager {
     public selectedTool: ZoneType | 'Clear' | null = null;
     
-    constructor(private cityManager: CityManager, private renderer: GameRenderer) {
+    constructor(private cityManager: CityManager, private renderer: GameRenderer, private sim: SimulationEngine) {
         this.setupEventListeners();
     }
 
@@ -65,6 +66,25 @@ export class UIManager {
     private handleCanvasClick(gridX: number, gridY: number) {
         if (!this.selectedTool) return;
         
+        let cost = 0;
+        if (this.selectedTool === 'Clear') cost = 5;
+        else if (this.selectedTool === ZoneType.Residential) cost = 100;
+        else if (this.selectedTool === ZoneType.Commercial) cost = 100;
+        else if (this.selectedTool === ZoneType.Industrial) cost = 100;
+        else if (this.selectedTool === ZoneType.PowerPlant) cost = 1000;
+        else if (this.selectedTool === ZoneType.Hospital) cost = 1000;
+        else if (this.selectedTool === ZoneType.PoliceStation) cost = 1000;
+        else if (this.selectedTool === ZoneType.MaintenanceDepot) cost = 1000;
+        else if (this.selectedTool === ZoneType.Launchpad) cost = 5000;
+        else if (this.selectedTool === ZoneType.DroneStation) cost = 1500;
+        else if (this.selectedTool === ZoneType.Transit) cost = 10;
+        else if (this.selectedTool === ZoneType.PowerLine) cost = 10;
+
+        if (this.sim.funds < cost) {
+            // Not enough money
+            return;
+        }
+
         let success = false;
         if (this.selectedTool === 'Clear') {
             success = this.cityManager.clearZone(gridX, gridY);
@@ -73,6 +93,9 @@ export class UIManager {
         }
         
         if (success) {
+            this.sim.funds -= cost;
+            const uiFunds = document.getElementById('ui-funds');
+            if (uiFunds) uiFunds.innerText = this.sim.funds.toString();
             this.renderer.requestRender();
         }
     }
