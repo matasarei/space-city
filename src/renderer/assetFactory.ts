@@ -141,11 +141,19 @@ export class AssetFactory {
         h.rect(60, 4, 32, 32); h.fill(0x228822); // Top right
         h.rect(4, 60, 32, 32); h.fill(0x228822); // Bottom left
         h.rect(60, 60, 32, 32); h.fill(0x228822); // Bottom right
-        // Trees in gardens
-        h.circle(20, 20, 6); h.fill(0x00FF00);
-        h.circle(76, 20, 6); h.fill(0x00FF00);
-        h.circle(20, 76, 6); h.fill(0x00FF00);
-        h.circle(76, 76, 6); h.fill(0x00FF00);
+        // Trees in gardens and glass biodomes
+        const drawDome = (cx: number, cy: number) => {
+            h.circle(cx, cy, 6); h.fill(0x00FF00); // tree
+            // Glass dome
+            h.circle(cx, cy, 14); h.fill({ color: 0x88CCFF, alpha: 0.3 });
+            h.circle(cx, cy, 14); h.stroke({ width: 1, color: 0x88CCFF, alpha: 0.8 });
+            // Glare
+            h.circle(cx - 4, cy - 4, 4); h.fill({ color: 0xFFFFFF, alpha: 0.6 });
+        };
+        drawDome(20, 20);
+        drawDome(76, 20);
+        drawDome(20, 76);
+        drawDome(76, 76);
 
         // Cross shaped building
         h.rect(32, 8, 32, 80); h.fill(0xDDDDDD);
@@ -159,12 +167,22 @@ export class AssetFactory {
         h.circle(48, 80, 8); h.fill(0x666666); h.circle(48, 80, 4); h.fill(0x999999);
         
         // Ambulance Drones
-        const drawAmbulance = (x: number, y: number) => {
-            h.rect(x-4, y-4, 8, 8); h.fill(0xFFFFFF); // white body
-            h.rect(x-1, y-3, 2, 6); h.fill(0xCC0000); // red cross
-            h.rect(x-3, y-1, 6, 2); h.fill(0xCC0000); 
-            h.rect(x-5, y-2, 2, 4); h.fill(0x333333); // thrusters
-            h.rect(x+3, y-2, 2, 4); h.fill(0x333333);
+        const drawAmbulance = (cx: number, cy: number) => {
+            h.rect(cx-6, cy-5, 3, 1); h.fill(0xAAAAAA); h.rect(cx-5, cy-6, 1, 3); h.fill(0xAAAAAA);
+            h.rect(cx+3, cy-5, 3, 1); h.fill(0xAAAAAA); h.rect(cx+4, cy-6, 1, 3); h.fill(0xAAAAAA);
+            h.rect(cx-6, cy+4, 3, 1); h.fill(0xAAAAAA); h.rect(cx-5, cy+3, 1, 3); h.fill(0xAAAAAA);
+            h.rect(cx+3, cy+4, 3, 1); h.fill(0xAAAAAA); h.rect(cx+4, cy+3, 1, 3); h.fill(0xAAAAAA);
+
+            h.rect(cx-4, cy-4, 2, 2); h.fill(0x555555); h.rect(cx+2, cy-4, 2, 2); h.fill(0x555555);
+            h.rect(cx-4, cy+2, 2, 2); h.fill(0x555555); h.rect(cx+2, cy+2, 2, 2); h.fill(0x555555);
+
+            h.rect(cx-5, cy-5, 1, 1); h.fill(0xFF0000); h.rect(cx+4, cy-5, 1, 1); h.fill(0xFF0000);
+            h.rect(cx-5, cy+4, 1, 1); h.fill(0xFF0000); h.rect(cx+4, cy+4, 1, 1); h.fill(0xFF0000);
+
+            h.rect(cx-2, cy-2, 4, 4); h.fill(0xFFFFFF); // white body
+            h.rect(cx-1, cy-2, 2, 4); h.fill(0xCC0000); // red cross
+            h.rect(cx-2, cy-1, 4, 2); h.fill(0xCC0000);
+            h.rect(cx-1, cy-3, 2, 1); h.fill(0xFFFFFF); // front camera
         };
         drawAmbulance(48, 16); // parked top
         drawAmbulance(48, 80); // parked bottom
@@ -196,17 +214,26 @@ export class AssetFactory {
         po.rect(68, 12, 16, 16); po.fill(0x555555);
         
         // Police Patrol Drones
-        const pd = (dx: number, dy: number) => {
-            po.rect(dx, dy, 8, 8); po.fill(0x111111); // Drone body
-            po.rect(dx+1, dy-2, 2, 2); po.fill(0xFF0000); // Red light
-            po.rect(dx+5, dy-2, 2, 2); po.fill(0x0000FF); // Blue light
-            po.rect(dx-2, dy+2, 2, 4); po.fill(0x555555); // wings
-            po.rect(dx+8, dy+2, 2, 4); po.fill(0x555555);
+        const pd = (cx: number, cy: number) => {
+            po.rect(cx-6, cy-5, 3, 1); po.fill(0xAAAAAA); po.rect(cx-5, cy-6, 1, 3); po.fill(0xAAAAAA);
+            po.rect(cx+3, cy-5, 3, 1); po.fill(0xAAAAAA); po.rect(cx+4, cy-6, 1, 3); po.fill(0xAAAAAA);
+            po.rect(cx-6, cy+4, 3, 1); po.fill(0xAAAAAA); po.rect(cx-5, cy+3, 1, 3); po.fill(0xAAAAAA);
+            po.rect(cx+3, cy+4, 3, 1); po.fill(0xAAAAAA); po.rect(cx+4, cy+3, 1, 3); po.fill(0xAAAAAA);
+
+            po.rect(cx-4, cy-4, 2, 2); po.fill(0x555555); po.rect(cx+2, cy-4, 2, 2); po.fill(0x555555);
+            po.rect(cx-4, cy+2, 2, 2); po.fill(0x555555); po.rect(cx+2, cy+2, 2, 2); po.fill(0x555555);
+
+            po.rect(cx-5, cy-5, 1, 1); po.fill(0xFF0000); po.rect(cx+4, cy-5, 1, 1); po.fill(0x0000FF);
+            po.rect(cx-5, cy+4, 1, 1); po.fill(0xFF0000); po.rect(cx+4, cy+4, 1, 1); po.fill(0x0000FF);
+
+            po.rect(cx-2, cy-2, 4, 4); po.fill(0x113388); // Blue body
+            po.rect(cx-1, cy-1, 2, 2); po.fill(0xFFDD00); // Gold star
+            po.rect(cx-1, cy-3, 2, 1); po.fill(0xFFFFFF); // front camera
         };
-        pd(36, 40); // Courtyard parked
-        pd(52, 40); // Courtyard parked
-        pd(16, 76); // Hovering over wing
-        pd(72, 76); // Hovering over wing
+        pd(40, 44); // Courtyard parked
+        pd(56, 44); // Courtyard parked
+        pd(20, 80); // Hovering over wing
+        pd(76, 80); // Hovering over wing
         this.buildingTextures['policestation'] = app.renderer.generateTexture(po);
 
         // MaintenanceDepot 3x3

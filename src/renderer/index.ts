@@ -208,42 +208,69 @@ export class GameRenderer {
     }
 
     private spawnRandomDrone() {
-        const nodes = this.cityManager.zones.filter(z => z.type === ZoneType.DroneStation || z.type === ZoneType.Launchpad);
-        if (nodes.length < 2) return;
-        
-        const startNode = nodes[Math.floor(Math.random() * nodes.length)];
-        let endNode = nodes[Math.floor(Math.random() * nodes.length)];
-        while (endNode === startNode) {
-            endNode = nodes[Math.floor(Math.random() * nodes.length)];
+        const droneTypes = [];
+        const launchpads = this.cityManager.zones.filter(z => z.type === ZoneType.DroneStation || z.type === ZoneType.Launchpad);
+        const police = this.cityManager.zones.filter(z => z.type === ZoneType.PoliceStation);
+        const hospitals = this.cityManager.zones.filter(z => z.type === ZoneType.Hospital);
+        const targets = this.cityManager.zones.filter(z => z.type === ZoneType.Residential || z.type === ZoneType.Commercial || z.type === ZoneType.Industrial);
+
+        if (launchpads.length >= 2) droneTypes.push('cargo');
+        if (police.length > 0 && targets.length > 0) droneTypes.push('police');
+        if (hospitals.length > 0 && targets.length > 0) droneTypes.push('ambulance');
+
+        if (droneTypes.length === 0) return;
+
+        const type = droneTypes[Math.floor(Math.random() * droneTypes.length)];
+
+        let startNode;
+        let endNode;
+        let drone = new Graphics();
+
+        const drawProps = (cx: number, cy: number, g: Graphics) => {
+            g.rect(cx-6, cy-5, 3, 1); g.fill(0xAAAAAA); g.rect(cx-5, cy-6, 1, 3); g.fill(0xAAAAAA);
+            g.rect(cx+3, cy-5, 3, 1); g.fill(0xAAAAAA); g.rect(cx+4, cy-6, 1, 3); g.fill(0xAAAAAA);
+            g.rect(cx-6, cy+4, 3, 1); g.fill(0xAAAAAA); g.rect(cx-5, cy+3, 1, 3); g.fill(0xAAAAAA);
+            g.rect(cx+3, cy+4, 3, 1); g.fill(0xAAAAAA); g.rect(cx+4, cy+3, 1, 3); g.fill(0xAAAAAA);
+
+            g.rect(cx-4, cy-4, 2, 2); g.fill(0x555555); g.rect(cx+2, cy-4, 2, 2); g.fill(0x555555);
+            g.rect(cx-4, cy+2, 2, 2); g.fill(0x555555); g.rect(cx+2, cy+2, 2, 2); g.fill(0x555555);
+        };
+
+        if (type === 'cargo') {
+            startNode = launchpads[Math.floor(Math.random() * launchpads.length)];
+            endNode = launchpads[Math.floor(Math.random() * launchpads.length)];
+            while (endNode === startNode) endNode = launchpads[Math.floor(Math.random() * launchpads.length)];
+            
+            drawProps(0, 0, drone);
+            drone.rect(-5, -5, 1, 1); drone.fill(0xFF0000); drone.rect(4, -5, 1, 1); drone.fill(0xFF0000);
+            drone.rect(-5, 4, 1, 1); drone.fill(0x00FF00); drone.rect(4, 4, 1, 1); drone.fill(0x00FF00);
+            drone.rect(-2, -2, 4, 4); drone.fill(0x00FFFF);
+            drone.rect(-1, -1, 2, 2); drone.fill(0x222222);
+            drone.rect(-1, -3, 2, 1); drone.fill(0xFFFFFF); // camera
+        } else if (type === 'police') {
+            if (Math.random() > 0.4) return; // lower frequency
+            startNode = police[Math.floor(Math.random() * police.length)];
+            endNode = targets[Math.floor(Math.random() * targets.length)];
+            
+            drawProps(0, 0, drone);
+            drone.rect(-5, -5, 1, 1); drone.fill(0xFF0000); drone.rect(4, -5, 1, 1); drone.fill(0x0000FF);
+            drone.rect(-5, 4, 1, 1); drone.fill(0xFF0000); drone.rect(4, 4, 1, 1); drone.fill(0x0000FF);
+            drone.rect(-2, -2, 4, 4); drone.fill(0x113388);
+            drone.rect(-1, -1, 2, 2); drone.fill(0xFFDD00);
+            drone.rect(-1, -3, 2, 1); drone.fill(0xFFFFFF); // camera
+        } else {
+            if (Math.random() > 0.4) return; // lower frequency
+            startNode = hospitals[Math.floor(Math.random() * hospitals.length)];
+            endNode = targets[Math.floor(Math.random() * targets.length)];
+            
+            drawProps(0, 0, drone);
+            drone.rect(-5, -5, 1, 1); drone.fill(0xFF0000); drone.rect(4, -5, 1, 1); drone.fill(0xFF0000);
+            drone.rect(-5, 4, 1, 1); drone.fill(0xFF0000); drone.rect(4, 4, 1, 1); drone.fill(0xFF0000);
+            drone.rect(-2, -2, 4, 4); drone.fill(0xFFFFFF);
+            drone.rect(-1, -2, 2, 4); drone.fill(0xCC0000);
+            drone.rect(-2, -1, 4, 2); drone.fill(0xCC0000);
+            drone.rect(-1, -3, 2, 1); drone.fill(0xFFFFFF); // camera
         }
-        
-        const drone = new Graphics();
-        // Rotors
-        drone.rect(-6, -5, 3, 1); drone.fill(0xAAAAAA);
-        drone.rect(-5, -6, 1, 3); drone.fill(0xAAAAAA);
-        drone.rect(3, -5, 3, 1); drone.fill(0xAAAAAA);
-        drone.rect(4, -6, 1, 3); drone.fill(0xAAAAAA);
-        drone.rect(-6, 4, 3, 1); drone.fill(0xAAAAAA);
-        drone.rect(-5, 3, 1, 3); drone.fill(0xAAAAAA);
-        drone.rect(3, 4, 3, 1); drone.fill(0xAAAAAA);
-        drone.rect(4, 3, 1, 3); drone.fill(0xAAAAAA);
-        
-        // Rotor Lights
-        drone.rect(-5, -5, 1, 1); drone.fill(0xFF0000);
-        drone.rect(4, -5, 1, 1); drone.fill(0xFF0000);
-        drone.rect(-5, 4, 1, 1); drone.fill(0x00FF00);
-        drone.rect(4, 4, 1, 1); drone.fill(0x00FF00);
-        
-        // Arms
-        drone.rect(-4, -4, 2, 2); drone.fill(0x555555);
-        drone.rect(2, -4, 2, 2); drone.fill(0x555555);
-        drone.rect(-4, 2, 2, 2); drone.fill(0x555555);
-        drone.rect(2, 2, 2, 2); drone.fill(0x555555);
-        
-        // Body
-        drone.rect(-2, -2, 4, 4); drone.fill(0x00FFFF);
-        drone.rect(-1, -1, 2, 2); drone.fill(0x222222);
-        drone.rect(-1, -3, 2, 1); drone.fill(0xFFFFFF); // front camera
         
         this.droneLayer.addChild(drone);
         
