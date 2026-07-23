@@ -30,7 +30,9 @@ export class GameRenderer {
     private powerLineLayer = new Container();
     private zoneLayer = new Container();
     private droneLayer = new Container();
+    private dustLayer = new Container();
     private ghostGraphics = new Graphics();
+    private dustClouds: { sprite: Graphics; vx: number; vy: number }[] = [];
 
     // Sprite Caching
     private terrainSprites: Sprite[][] = [];
@@ -49,7 +51,7 @@ export class GameRenderer {
         const appContainer = document.getElementById('app')!;
         await this.app.init({
             resizeTo: appContainer,
-            backgroundColor: 0x111111,
+            backgroundColor: 0x1A0602,
             resolution: window.devicePixelRatio || 1,
         });
         
@@ -72,6 +74,7 @@ export class GameRenderer {
         this.viewport.addChild(this.powerLineLayer);
         this.viewport.addChild(this.zoneLayer);
         this.viewport.addChild(this.droneLayer);
+        this.viewport.addChild(this.dustLayer);
         this.viewport.addChild(this.ghostGraphics);
 
         // Map Control Requirements Setup
@@ -161,6 +164,7 @@ export class GameRenderer {
         }
 
         this.renderGrid();
+        this.initDustStorms();
 
         let lastGridStartX = -1, lastGridStartY = -1, lastGridEndX = -1, lastGridEndY = -1;
 
@@ -174,6 +178,7 @@ export class GameRenderer {
                 this.spawnRandomDrone();
             }
             this.updateDrones(this.app.ticker.deltaTime);
+            this.updateDustStorms(this.app.ticker.deltaTime);
 
             const screenW = window.innerWidth;
             const screenH = window.innerHeight;
@@ -259,6 +264,47 @@ export class GameRenderer {
             }
         };
         requestAnimationFrame(centerCamera);
+    }
+
+    // Cosmetic Martian dust storms drifting across the surface
+    private initDustStorms() {
+        const worldW = this.cityManager.grid.width * this.TILE_SIZE;
+        const worldH = this.cityManager.grid.height * this.TILE_SIZE;
+
+        for (let i = 0; i < 10; i++) {
+            const g = new Graphics();
+            for (let j = 0; j < 14; j++) {
+                const rx = ((j * 53) % 220) - 110;
+                const ry = ((j * 31) % 120) - 60;
+                const rr = 16 + ((j * 7) % 26);
+                g.ellipse(rx, ry, rr * 1.8, rr);
+                g.fill({ color: j % 2 === 0 ? 0xD9A066 : 0xC77B46, alpha: 0.08 });
+            }
+            g.x = Math.random() * worldW;
+            g.y = Math.random() * worldH;
+            this.dustLayer.addChild(g);
+            this.dustClouds.push({
+                sprite: g,
+                vx: 0.2 + Math.random() * 0.35,
+                vy: 0.05 + Math.random() * 0.1,
+            });
+        }
+    }
+
+    private updateDustStorms(dt: number) {
+        const worldW = this.cityManager.grid.width * this.TILE_SIZE;
+        const worldH = this.cityManager.grid.height * this.TILE_SIZE;
+        const margin = 250;
+
+        for (const c of this.dustClouds) {
+            c.sprite.x += c.vx * dt;
+            c.sprite.y += c.vy * dt;
+            if (c.sprite.x > worldW + margin) {
+                c.sprite.x = -margin;
+                c.sprite.y = Math.random() * worldH;
+            }
+            if (c.sprite.y > worldH + margin) c.sprite.y = -margin;
+        }
     }
 
     private spawnRandomDrone() {
@@ -537,7 +583,9 @@ export class GameRenderer {
             let container = this.zoneContainers.get(zone.id);
             if (!container) {
                 container = new Container();
-                container.renderable = false;
+                // Start renderable so freshly placed zones appear immediately;
+                // the culling pass corrects this on the next viewport change.
+                container.renderable = true;
                 this.zoneLayer.addChild(container);
                 this.zoneContainers.set(zone.id, container);
             }

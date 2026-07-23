@@ -4,8 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>SpaceCity: Mars Colony Simulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet" />
     <style>
-      body { margin: 0; padding: 0; overflow: hidden; background-color: #000; color: #fff; font-family: monospace; }
+      body { margin: 0; padding: 0; overflow: hidden; background-color: #000; color: #fff; font-family: 'VT323', monospace; }
       #app { width: 100vw; height: 100vh; position: relative; }
     </style>
     <link rel="stylesheet" href="/src/ui/style.css" />
@@ -31,11 +34,29 @@
             <rect x="5" y="11" width="6" height="2" fill="#00AA00"/>
           </svg>
         </button>
-        <button class="btn tool-btn" data-tool="Residential" title="Residential Zone">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24" shape-rendering="crispEdges"><rect x="3" y="6" width="10" height="10" fill="#00AA00"/><rect x="5" y="4" width="6" height="2" fill="#00AA00"/><rect x="7" y="2" width="2" height="2" fill="#00AA00"/><rect x="5" y="10" width="2" height="6" fill="#000"/></svg>
+        <button class="btn tool-btn" data-tool="Residential" title="Residential Zone (Dome Habitats)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24" shape-rendering="crispEdges">
+            <rect x="6" y="2" width="4" height="2" fill="#00CC00"/>
+            <rect x="4" y="4" width="8" height="2" fill="#00CC00"/>
+            <rect x="3" y="6" width="10" height="2" fill="#00CC00"/>
+            <rect x="2" y="8" width="12" height="4" fill="#00CC00"/>
+            <rect x="5" y="4" width="2" height="2" fill="#AAFFAA"/>
+            <rect x="7" y="9" width="2" height="3" fill="#003300"/>
+            <rect x="1" y="12" width="14" height="2" fill="#555"/>
+          </svg>
         </button>
-        <button class="btn tool-btn" data-tool="Commercial" title="Commercial Zone">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24" shape-rendering="crispEdges"><rect x="4" y="2" width="8" height="14" fill="#0055FF"/><rect x="6" y="4" width="2" height="2" fill="#FFF"/><rect x="6" y="8" width="2" height="2" fill="#FFF"/><rect x="6" y="12" width="2" height="2" fill="#FFF"/></svg>
+        <button class="btn tool-btn" data-tool="Commercial" title="Commercial Zone (Neon Markets)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24" shape-rendering="crispEdges">
+            <rect x="2" y="5" width="12" height="10" fill="#331A66"/>
+            <rect x="1" y="1" width="14" height="4" fill="#FF00FF"/>
+            <rect x="2" y="2" width="12" height="2" fill="#220044"/>
+            <rect x="3" y="2" width="2" height="2" fill="#00FFFF"/>
+            <rect x="7" y="2" width="2" height="2" fill="#00FFFF"/>
+            <rect x="11" y="2" width="2" height="2" fill="#00FFFF"/>
+            <rect x="4" y="7" width="3" height="3" fill="#00FFFF"/>
+            <rect x="9" y="7" width="3" height="3" fill="#00FFFF"/>
+            <rect x="6" y="11" width="4" height="4" fill="#FF00FF"/>
+          </svg>
         </button>
         <button class="btn tool-btn" data-tool="Industrial" title="Industrial Zone">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24" shape-rendering="crispEdges"><rect x="2" y="8" width="12" height="8" fill="#FFCC00"/><rect x="10" y="2" width="2" height="6" fill="#AA8800"/><rect x="10" y="0" width="4" height="2" fill="#555"/></svg>
@@ -59,8 +80,16 @@
             <rect x="5" y="12" width="3" height="3" fill="#FFCC00"/>
           </svg>
         </button>
-        <button class="btn tool-btn secondary-tool" data-tool="PowerLine" title="Build Power Line">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24" shape-rendering="crispEdges"><rect x="7" y="2" width="2" height="12" fill="#8B4513"/><rect x="5" y="4" width="6" height="2" fill="#8B4513"/><rect x="4" y="4" width="10" height="1" fill="#000"/></svg>
+        <button class="btn tool-btn secondary-tool" data-tool="PowerLine" title="Build Power Conduit">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24" shape-rendering="crispEdges">
+            <rect x="7" y="3" width="2" height="12" fill="#888"/>
+            <rect x="3" y="5" width="10" height="2" fill="#888"/>
+            <rect x="5" y="13" width="6" height="2" fill="#555"/>
+            <rect x="0" y="4" width="16" height="1" fill="#00FFFF"/>
+            <rect x="2" y="4" width="2" height="2" fill="#00FFFF"/>
+            <rect x="12" y="4" width="2" height="2" fill="#00FFFF"/>
+            <rect x="7" y="0" width="2" height="2" fill="#FFDD00"/>
+          </svg>
         </button>
         <button class="btn tool-btn secondary-tool" data-tool="Hospital" title="Build Hospital">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24" shape-rendering="crispEdges"><rect x="2" y="2" width="12" height="12" fill="#FFF"/><rect x="6" y="4" width="4" height="8" fill="#F00"/><rect x="4" y="6" width="8" height="4" fill="#F00"/></svg>
@@ -81,16 +110,17 @@
             <rect x="7" y="7" width="2" height="2" fill="#FFFFFF"/>
           </svg>
         </button>
-        <button class="btn tool-btn secondary-tool" data-tool="MaintenanceDepot" title="Build Maintenance Depot">
+        <button class="btn tool-btn secondary-tool" data-tool="MaintenanceDepot" title="Build Maintenance Center">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24" shape-rendering="crispEdges">
-            <rect x="1" y="4" width="4" height="2" fill="#555"/>
-            <rect x="3" y="6" width="2" height="4" fill="#555"/>
-            <rect x="1" y="10" width="4" height="2" fill="#555"/>
-            <rect x="5" y="7" width="6" height="2" fill="#777"/>
-            <rect x="11" y="5" width="4" height="2" fill="#555"/>
-            <rect x="11" y="7" width="1" height="2" fill="#555"/>
-            <rect x="14" y="7" width="1" height="2" fill="#555"/>
-            <rect x="11" y="9" width="4" height="2" fill="#555"/>
+            <rect x="1" y="1" width="2" height="4" fill="#999"/>
+            <rect x="5" y="1" width="2" height="4" fill="#999"/>
+            <rect x="1" y="3" width="6" height="3" fill="#999"/>
+            <rect x="3" y="1" width="2" height="2" fill="#c0c0c0"/>
+            <rect x="4" y="6" width="3" height="3" fill="#999"/>
+            <rect x="6" y="8" width="3" height="3" fill="#999"/>
+            <rect x="8" y="10" width="3" height="3" fill="#999"/>
+            <rect x="10" y="11" width="5" height="4" fill="#E6A100"/>
+            <rect x="11" y="12" width="3" height="2" fill="#7A5000"/>
           </svg>
         </button>
         <button class="btn tool-btn secondary-tool" data-tool="Launchpad" title="Build Launchpad">
@@ -162,44 +192,51 @@
       </div>
       
       <!-- Budget Modal -->
-      <div id="budget-modal" style="display: none;">
-          <h2 style="margin-top: 0; text-align: center; border-bottom: 2px solid #808080; padding-bottom: 10px;">CITY BUDGET</h2>
-          <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-              <div style="width: 45%;">
-                  <h3>REVENUE</h3>
-                  <div style="display: flex; justify-content: space-between;"><span>Res:</span> <span id="budget-rev-r" style="color: green;">$0</span></div>
-                  <div style="display: flex; justify-content: space-between;"><span>Com:</span> <span id="budget-rev-c" style="color: green;">$0</span></div>
-                  <div style="display: flex; justify-content: space-between;"><span>Ind:</span> <span id="budget-rev-i" style="color: green;">$0</span></div>
-                  <div style="border-top: 1px solid #000; margin-top: 5px; padding-top: 5px; display: flex; justify-content: space-between; font-weight: bold;">
-                      <span>Total:</span> <span id="budget-rev-total" style="color: green;">$0</span>
+      <div id="budget-modal" class="win-window" style="display: none;">
+          <div class="win-titlebar">
+              <span class="win-title">CITY BUDGET</span>
+              <button id="btn-close-budget" class="win-close" title="Close">&#9632;</button>
+          </div>
+          <div class="win-body">
+              <div class="budget-cols">
+                  <div class="budget-col">
+                      <h3>REVENUE</h3>
+                      <div class="budget-row"><span>Res:</span> <span id="budget-rev-r" class="val-pos">$0</span></div>
+                      <div class="budget-row"><span>Com:</span> <span id="budget-rev-c" class="val-pos">$0</span></div>
+                      <div class="budget-row"><span>Ind:</span> <span id="budget-rev-i" class="val-pos">$0</span></div>
+                      <div class="budget-total">
+                          <span>Total:</span> <span id="budget-rev-total" class="val-pos">$0</span>
+                      </div>
+                  </div>
+                  <div class="budget-col">
+                      <h3>EXPENSES</h3>
+                      <div class="budget-row"><span>Power:</span> <span id="budget-exp-p" class="val-neg">$0</span></div>
+                      <div class="budget-row"><span>Health:</span> <span id="budget-exp-h" class="val-neg">$0</span></div>
+                      <div class="budget-row"><span>Police:</span> <span id="budget-exp-pol" class="val-neg">$0</span></div>
+                      <div class="budget-row"><span>Maint:</span> <span id="budget-exp-m" class="val-neg">$0</span></div>
+                      <div class="budget-total">
+                          <span>Total:</span> <span id="budget-exp-total" class="val-neg">$0</span>
+                      </div>
                   </div>
               </div>
-              <div style="width: 45%;">
-                  <h3>EXPENSES</h3>
-                  <div style="display: flex; justify-content: space-between;"><span>Power:</span> <span id="budget-exp-p" style="color: red;">$0</span></div>
-                  <div style="display: flex; justify-content: space-between;"><span>Health:</span> <span id="budget-exp-h" style="color: red;">$0</span></div>
-                  <div style="display: flex; justify-content: space-between;"><span>Police:</span> <span id="budget-exp-pol" style="color: red;">$0</span></div>
-                  <div style="display: flex; justify-content: space-between;"><span>Maint:</span> <span id="budget-exp-m" style="color: red;">$0</span></div>
-                  <div style="border-top: 1px solid #000; margin-top: 5px; padding-top: 5px; display: flex; justify-content: space-between; font-weight: bold;">
-                      <span>Total:</span> <span id="budget-exp-total" style="color: red;">$0</span>
-                  </div>
+              <div class="budget-net">
+                  NET INCOME: <span id="budget-net">$0</span>
               </div>
-          </div>
-          <div style="text-align: center; font-size: 18px; font-weight: bold; padding: 10px; background: #FFF; border: 2px solid; border-color: #808080 #FFF #FFF #808080; margin-bottom: 20px;">
-              NET INCOME: <span id="budget-net">$0</span>
-          </div>
-          <div style="text-align: center;">
-              <button id="btn-close-budget" class="btn">Close</button>
           </div>
       </div>
     </div>
     <div id="app"></div>
     
-    <div id="game-over-modal" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #222; border: 2px solid #555; padding: 20px; z-index: 10000; font-family: monospace; color: white; width: 300px; text-align: center;">
-      <h2 style="color: red; margin-top: 0;">GAME OVER</h2>
-      <p>Your funds dropped below -$1000.</p>
-      <p>The colony is bankrupt!</p>
-      <button class="btn" id="btn-restart" style="width: 100%; margin-top: 20px;">Restart</button>
+    <div id="game-over-modal" class="win-window" style="display: none; z-index: 10000; width: 320px;">
+      <div class="win-titlebar alert">
+        <span class="win-title">SYSTEM FAILURE</span>
+      </div>
+      <div class="win-body" style="text-align: center;">
+        <h2 style="color: #a00000; margin-top: 0;">GAME OVER</h2>
+        <p>Your funds dropped below -$1000.</p>
+        <p>The colony is bankrupt!</p>
+        <button class="btn" id="btn-restart" style="width: 100%; margin-top: 12px;">Restart</button>
+      </div>
     </div>
 
     <script type="module" src="/src/main.ts"></script>

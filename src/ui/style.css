@@ -5,6 +5,7 @@ html, body {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  font-family: 'VT323', 'Perfect DOS VGA 437', monospace;
 }
 
 #ui-layer {
@@ -19,6 +20,13 @@ html, body {
   touch-action: none;
   overscroll-behavior: none;
   overflow: hidden;
+  border: 2px solid;
+  border-color: #808080 #fff #fff #808080;
+  background: #1a0602;
+}
+
+#app canvas {
+  image-rendering: pixelated;
 }
 
 #zoom-controls {
@@ -27,40 +35,52 @@ html, body {
   right: 20px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
   pointer-events: auto;
 }
 
 .zoom-btn {
-  font-size: 16px;
+  font-size: 20px;
   min-width: 40px;
   height: 40px;
   padding: 0 5px;
   text-align: center;
 }
 
+/* DOS status readout bar */
 #info-bar {
   pointer-events: auto;
-  background: #000080; /* Classic MS-DOS blue */
+  background: #000080;
   color: #fff;
-  padding: 4px 12px;
+  padding: 2px 8px;
   display: flex;
   justify-content: space-between;
-  border-bottom: 2px solid #fff;
-  font-family: monospace;
-  font-size: 16px;
-  font-weight: bold;
+  border-bottom: 2px solid #000;
+  font-size: 20px;
   flex-wrap: wrap;
   gap: 10px;
 }
 
+#info-bar > span {
+  background: #000060;
+  border: 1px solid;
+  border-color: #000040 #4040c0 #4040c0 #000040;
+  padding: 0 8px;
+  color: #55ffff;
+}
+
+#info-bar > span > span {
+  color: #ffff55;
+}
+
 #toolbar {
   pointer-events: auto;
-  background: #c0c0c0; /* classic Windows 95 grey */
+  background: #c0c0c0;
+  border-top: 2px solid #fff;
   border-bottom: 2px solid #000;
-  padding: 8px;
+  padding: 6px;
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
   flex-wrap: wrap;
   max-height: 40vh;
@@ -77,20 +97,30 @@ html, body {
   justify-content: center;
 }
 
-/* Classic button style */
+#toolbar .btn svg {
+  image-rendering: pixelated;
+}
+
+/* Win 3.1 beveled button */
 .btn {
   background: #c0c0c0;
   border: 2px solid;
   border-color: #fff #808080 #808080 #fff;
+  box-shadow: 1px 1px 0 #000;
   padding: 6px 12px;
-  font-family: monospace;
-  font-weight: bold;
+  font-family: inherit;
+  font-size: 18px;
   cursor: pointer;
   color: #000;
 }
 .btn:active, .btn.active {
   border-color: #808080 #fff #fff #808080;
-  background: #a0a0a0;
+  box-shadow: none;
+  background: #a8a8a8;
+}
+.btn.active {
+  background:
+    repeating-conic-gradient(#c0c0c0 0% 25%, #fff 0% 50%) 0 0 / 4px 4px;
 }
 
 #menu-toggle {
@@ -105,11 +135,11 @@ html, body {
   .secondary-tool {
     display: none !important;
   }
-  
+
   #toolbar.expanded .secondary-tool {
     display: flex !important;
   }
-  
+
   #btn-expand-tools {
     display: flex !important;
     align-items: center;
@@ -129,18 +159,17 @@ html, body {
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: silver;
+  background: #c0c0c0;
   border: 2px solid;
   border-color: #FFF #808080 #808080 #FFF;
-  padding: 8px;
+  outline: 1px solid #000;
+  padding: 6px;
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
   width: calc(100% - 160px);
   max-width: 600px;
   color: #000;
-  font-family: monospace;
-  font-weight: bold;
   z-index: 100;
   pointer-events: none;
 }
@@ -159,41 +188,125 @@ html, body {
 
 #advisor-message {
   flex: 1;
-  font-size: 14px;
-  line-height: 1.4;
+  font-size: 18px;
+  line-height: 1.2;
 }
 
-#budget-modal {
+/* Win 3.1 window (modals) */
+.win-window {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: silver;
+  background: #c0c0c0;
   border: 2px solid;
   border-color: #FFF #808080 #808080 #FFF;
-  padding: 20px;
+  outline: 1px solid #000;
+  padding: 2px;
   z-index: 1000;
   width: 400px;
   max-width: 90%;
   box-sizing: border-box;
-  font-family: monospace;
   color: #000;
   box-shadow: 4px 4px 0px rgba(0,0,0,0.5);
   pointer-events: auto;
 }
 
+.win-titlebar {
+  background: #000080;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  height: 22px;
+  margin-bottom: 8px;
+}
+
+.win-titlebar.alert {
+  background: #800000;
+}
+
+.win-titlebar .win-title {
+  flex: 1;
+  text-align: center;
+  font-size: 18px;
+  letter-spacing: 1px;
+}
+
+.win-titlebar .win-close {
+  width: 20px;
+  height: 100%;
+  background: #c0c0c0;
+  color: #000;
+  border: 1px solid;
+  border-color: #fff #808080 #808080 #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+  box-sizing: border-box;
+  padding: 0;
+  font-family: inherit;
+}
+
+.win-body {
+  padding: 6px 12px 12px;
+  font-size: 18px;
+}
+
+.budget-cols {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.budget-col {
+  width: 46%;
+}
+
+.budget-col h3 {
+  margin: 4px 0;
+  border-bottom: 1px solid #808080;
+}
+
+.budget-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.budget-total {
+  border-top: 1px solid #000;
+  margin-top: 4px;
+  padding-top: 4px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+}
+
+.budget-net {
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+  padding: 8px;
+  background: #fff;
+  border: 2px solid;
+  border-color: #808080 #FFF #FFF #808080;
+}
+
+.val-pos { color: #008000; }
+.val-neg { color: #a00000; }
+
 @media (max-width: 600px) {
   #info-bar {
-    font-size: 12px;
-    padding: 4px 8px;
+    font-size: 14px;
+    padding: 2px 6px;
     gap: 6px;
   }
-  
-  #budget-modal {
+
+  .win-window {
     width: 95%;
-    padding: 10px;
   }
-  
+
   #advisor-panel {
     bottom: 20px;
     left: 10px;
