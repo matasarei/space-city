@@ -145,12 +145,14 @@ export class GameRenderer {
             for (let x = 0; x < this.cityManager.grid.width; x++) {
                 const ts = new Sprite(AssetFactory.terrainTextures['redsand']);
                 ts.x = x * this.TILE_SIZE; ts.y = y * this.TILE_SIZE; ts.width = this.TILE_SIZE; ts.height = this.TILE_SIZE;
+                ts.renderable = false;
                 this.terrainLayer.addChild(ts);
                 tRow.push(ts);
 
                 const ps = new Sprite(AssetFactory.powerLineTextures[0]);
                 ps.x = x * this.TILE_SIZE; ps.y = y * this.TILE_SIZE; ps.width = this.TILE_SIZE; ps.height = this.TILE_SIZE;
                 ps.visible = false;
+                ps.renderable = false;
                 this.powerLineLayer.addChild(ps);
                 pRow.push(ps);
             }
@@ -159,6 +161,8 @@ export class GameRenderer {
         }
 
         this.renderGrid();
+
+        let lastGridStartX = -1, lastGridStartY = -1, lastGridEndX = -1, lastGridEndY = -1;
 
         // Custom, bulletproof bounds checking (Requirement: no move outside the map)
         this.app.ticker.add(() => {
@@ -191,6 +195,52 @@ export class GameRenderer {
                 const minY = screenH - scaledWorldH;
                 if (this.viewport.y > 0) this.viewport.y = 0;
                 if (this.viewport.y < minY) this.viewport.y = minY;
+            }
+
+            // Culling Logic
+            const scale = this.viewport.scale.x;
+            const startX = -this.viewport.x / scale;
+            const startY = -this.viewport.y / scale;
+            const endX = startX + screenW / scale;
+            const endY = startY + screenH / scale;
+
+            const gridStartX = Math.max(0, Math.floor(startX / this.TILE_SIZE) - 2);
+            const gridStartY = Math.max(0, Math.floor(startY / this.TILE_SIZE) - 2);
+            const gridEndX = Math.min(this.cityManager.grid.width - 1, Math.ceil(endX / this.TILE_SIZE) + 2);
+            const gridEndY = Math.min(this.cityManager.grid.height - 1, Math.ceil(endY / this.TILE_SIZE) + 2);
+
+            if (gridStartX !== lastGridStartX || gridStartY !== lastGridStartY || gridEndX !== lastGridEndX || gridEndY !== lastGridEndY) {
+                // Hide old bounds
+                if (lastGridStartX !== -1) {
+                    for (let y = lastGridStartY; y <= lastGridEndY; y++) {
+                        for (let x = lastGridStartX; x <= lastGridEndX; x++) {
+                            this.terrainSprites[y][x].renderable = false;
+                            this.powerLineSprites[y][x].renderable = false;
+                        }
+                    }
+                }
+
+                // Show new bounds
+                for (let y = gridStartY; y <= gridEndY; y++) {
+                    for (let x = gridStartX; x <= gridEndX; x++) {
+                        this.terrainSprites[y][x].renderable = true;
+                        this.powerLineSprites[y][x].renderable = true;
+                    }
+                }
+
+                for (const zone of this.cityManager.zones) {
+                    const container = this.zoneContainers.get(zone.id);
+                    if (container) {
+                        const zx = zone.centerX * this.TILE_SIZE;
+                        const zy = zone.centerY * this.TILE_SIZE;
+                        container.renderable = zx >= startX - 128 && zx <= endX + 128 && zy >= startY - 128 && zy <= endY + 128;
+                    }
+                }
+
+                lastGridStartX = gridStartX;
+                lastGridStartY = gridStartY;
+                lastGridEndX = gridEndX;
+                lastGridEndY = gridEndY;
             }
         });
 
@@ -487,6 +537,7 @@ export class GameRenderer {
             let container = this.zoneContainers.get(zone.id);
             if (!container) {
                 container = new Container();
+                container.renderable = false;
                 this.zoneLayer.addChild(container);
                 this.zoneContainers.set(zone.id, container);
             }
