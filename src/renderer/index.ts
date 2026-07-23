@@ -76,8 +76,10 @@ export class GameRenderer {
 
         // Map Control Requirements Setup
         const isMobile = window.innerWidth <= 760;
-        const defaultZoom = isMobile ? 0.5 : 1.0;
-        const minZoom = 0.2;
+        const dpr = window.devicePixelRatio || 1;
+        // Adjust default zoom by devicePixelRatio to maintain consistent visual size
+        const defaultZoom = (isMobile ? 0.5 : 1.0) / dpr;
+        const minZoom = 0.2 / dpr;
         const maxZoom = 3.0;
 
         this.viewport.scale.set(defaultZoom);
