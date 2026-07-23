@@ -8,11 +8,11 @@
 ![SpaceCity](https://img.shields.io/badge/Status-Active-success)
 ![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen)
 ![Vite](https://img.shields.io/badge/Build-Vite-blue)
-![Built with Gemini](https://img.shields.io/badge/Built_with-Gemini-8A2BE2)
+![Built with Antigravity](https://img.shields.io/badge/Built_with-Antigravity-8A2BE2)
 
 ### 🚀 [Play SpaceCity Live Now!](https://matasarei.github.io/space-city/)
 
-SpaceCity is a deeply strategic, SimCity-inspired Mars colony simulator, **built entirely by Google's Gemini AI**. Build your starting Landing Base, connect it to Power Plants via Power Lines, and zone out Residential, Commercial, and Industrial sectors while managing crime, health, and a dynamic economy!
+SpaceCity is a deeply strategic, SimCity-inspired Mars colony simulator, **built entirely by Google's Gemini AI and the Antigravity agentic coding assistant**. Build your starting Landing Base, connect it to Power Plants via Power Lines, and zone out Residential, Commercial, and Industrial sectors while managing crime, health, and a dynamic economy!
 
 ## Features
 
