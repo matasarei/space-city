@@ -76,10 +76,10 @@ export class GameRenderer {
 
         // Map Control Requirements Setup
         const isMobile = window.innerWidth <= 760;
-        // Base resolution is considered 1920px for 1.0 zoom. 
-        // Scale default zoom relative to screen width so smaller logical screens (like Macs) show the same amount of map.
-        const defaultZoom = isMobile ? 0.5 : Math.max(0.6, window.innerWidth / 1920);
-        const minZoom = 0.2;
+        const dpr = window.devicePixelRatio || 1;
+        // Adjust default zoom by devicePixelRatio to maintain consistent visual size
+        const defaultZoom = (isMobile ? 0.5 : 1.0) / dpr;
+        const minZoom = 0.2 / dpr;
         const maxZoom = 3.0;
 
         this.viewport.scale.set(defaultZoom);

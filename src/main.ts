@@ -12,7 +12,7 @@ async function bootstrap() {
         appContainer.innerHTML = '<h1>SpaceCity Loading...</h1>';
     }
 
-    const cityManager = new CityManager(100, 100);
+    const cityManager = new CityManager(250, 250);
     const simulation = new SimulationEngine(cityManager);
     
     const renderer = new GameRenderer(cityManager);
